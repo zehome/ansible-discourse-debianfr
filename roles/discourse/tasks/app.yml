@@ -118,7 +118,7 @@
     update: True
     force: True
   become_user: "discourse"
-  with_items: {{ discourse_plugins }}
+  with_items: "{{ discourse_plugins }}"
   notify:
     - "reload discourse-unicorn"
 
