@@ -5,3 +5,9 @@
 /*.yml
 !/master.yml
 !/vars_example.yml
+
+# python virtualenv for ansible
+.local
+
+# ansible temp files
+*.retry

@@ -5,7 +5,7 @@
     name: "{{ item }}"
     production: True
     path: "/home/discourse"
-  sudo_user: "discourse"
+  become_user: "discourse"
   with_items:
     - "svgo"
     - "uglify-js"

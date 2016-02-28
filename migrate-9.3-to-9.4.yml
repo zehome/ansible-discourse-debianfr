@@ -2,7 +2,6 @@
 
 - name: "stop Nginx and Unicorn"
   hosts: "discourse"
-  sudo: True
   gather_facts: True
 
   tasks:
@@ -17,7 +16,6 @@
 
 - name: "migrate postgres to new major version"
   hosts: "postgres"
-  sudo: True
   gather_facts: True
 
   roles:
@@ -26,7 +24,6 @@
 
 - name: "install new postgres client and rebuild pg gem"
   hosts: "discourse"
-  sudo: True
   gather_facts: True
 
   roles:

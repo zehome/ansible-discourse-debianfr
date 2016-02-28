@@ -1,29 +1,12 @@
 ---
 
 - name: "determine path to libjemalloc shared object"
-  when: ansible_os_family == "RedHat"
-  shell: >
-    /usr/bin/rpm --query --list jemalloc |
-    /usr/bin/grep --extended-regexp --only-matching --line-regexp --max-count=1
-    '^/[_/[:alnum:]-]+/libjemalloc\.so\.1$'
-  register: libjemalloc_redhat
-  always_run: True
-  changed_when: False
-
-- name: "determine path to libjemalloc shared object"
   when: ansible_os_family == "Debian"
   shell: >
     /usr/bin/dpkg --listfiles libjemalloc1 |
     /bin/grep --extended-regexp --only-matching --line-regexp --max-count=1
     '^/[_/[:alnum:]-]+/libjemalloc\.so\.1$'
   register: libjemalloc_debian
-  always_run: True
-  changed_when: False
-
-- name: "set path to libjemalloc shared object"
-  when: ansible_os_family == "RedHat"
-  set_fact:
-    libjemalloc: "{{ libjemalloc_redhat.stdout }}"
   always_run: True
   changed_when: False
 

@@ -20,7 +20,7 @@
   environment:
     LANG: "{{ postgres_locale }}"
     LC_ALL: "{{ postgres_locale }}"
-  sudo_user: "postgres"
+  become_user: "postgres"
   register: pg_upgrade
 
 - name: "stdout from `pg_upgrade`"
@@ -47,5 +47,5 @@
   command: >
     /usr/pgsql-{{ postgres_new }}/bin/vacuumdb
     -U postgres --all --analyze-in-stages
-  sudo_user: "postgres"
+  become_user: "postgres"
   

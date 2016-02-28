@@ -1,1 +1,9 @@
-packages-rhel7.yml
+---
+
+- name: "install postfix"
+  yum:
+    name: "postfix"
+    state: "present"
+  notify:
+    - "restart postfix"
+

@@ -25,7 +25,7 @@
     encoding: "{{ postgres_encoding }}"
     lc_collate: "{{ postgres_locale }}"
     lc_ctype: "{{ postgres_locale }}"
-  sudo_user: "postgres"
+  become_user: "postgres"
 
 - name: "create discourse database user"
   postgresql_user:
@@ -33,11 +33,11 @@
     db: "discourse"
     priv: "ALL"
     password: "{{ postgres_password }}"
-  sudo_user: "postgres"
+  become_user: "postgres"
 
 - name: "check if discourse user owns public schema"
   command: >
-    /usr/bin/psql discourse -c
+    /usr/bin/psql --no-password discourse -c
     "COPY (
     SELECT schema_owner
     FROM information_schema.schemata
@@ -46,7 +46,7 @@
   always_run: True
   ignore_errors: True
   changed_when: False
-  sudo_user: "postgres"
+  become_user: "postgres"
   register: public_schema_owner
 
 - name: "ALTER SCHEMA public OWNER TO discourse"
@@ -54,82 +54,82 @@
     public_schema_owner is not defined
     or public_schema_owner.stdout != "discourse"
   command: >
-    /usr/bin/psql discourse -c
+    /usr/bin/psql --no-password discourse -c
     "ALTER SCHEMA public OWNER TO discourse;"
-  sudo_user: "postgres"
+  become_user: "postgres"
 
 - name: "check if template1 has extension hstore"
   command: >
-    /usr/bin/psql template1 -c
+    /usr/bin/psql --no-password template1 -c
     "COPY (
     SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='hstore' )
     ) TO STDOUT;"
   always_run: True
   ignore_errors: True
   changed_when: False
-  sudo_user: "postgres"
+  become_user: "postgres"
   register: template1_hstore
 
 - name: "template1 create extension hstore"
   when: template1_hstore is not defined or template1_hstore.stdout != "t"
   command: >
-    /usr/bin/psql template1 -c
+    /usr/bin/psql --no-password template1 -c
     "CREATE EXTENSION IF NOT EXISTS hstore;"
-  sudo_user: "postgres"
+  become_user: "postgres"
 
 - name: "check if template1 has extension pg_trgm"
   command: >
-    /usr/bin/psql template1 -c
+    /usr/bin/psql --no-password template1 -c
     "COPY (
     SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='pg_trgm' )
     ) TO STDOUT;"
   always_run: True
   ignore_errors: True
   changed_when: False
-  sudo_user: "postgres"
+  become_user: "postgres"
   register: template1_pg_trgm
 
 - name: "template1 create extension pg_trgm"
   when: template1_pg_trgm is not defined or template1_pg_trgm.stdout != "t"
   command: >
-    /usr/bin/psql template1 -c
+    /usr/bin/psql --no-password template1 -c
     "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
-  sudo_user: "postgres"
+  become_user: "postgres"
 
 - name: "check if discourse has extension hstore"
   command: >
-    /usr/bin/psql discourse -c
+    /usr/bin/psql --no-password discourse -c
     "COPY (
     SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='hstore' )
     ) TO STDOUT;"
   always_run: True
   changed_when: False
-  sudo_user: "postgres"
+  become_user: "postgres"
   register: discourse_hstore
 
 - name: "discourse create extension hstore"
   when: discourse_hstore is not defined or discourse_hstore.stdout != "t"
   command: >
-    /usr/bin/psql discourse -c
+    /usr/bin/psql --no-password discourse -c
     "CREATE EXTENSION IF NOT EXISTS hstore;"
-  sudo_user: "postgres"
+  become_user: "postgres"
 
 - name: "check if discourse has extension pg_trgm"
   command: >
-    /usr/bin/psql discourse -c
+    /usr/bin/psql --no-password discourse -c
     "COPY (
     SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='pg_trgm' )
     ) TO STDOUT;"
   always_run: True
   ignore_errors: True
   changed_when: False
-  sudo_user: "postgres"
+  become_user: "postgres"
   register: discourse_pg_trgm
 
 - name: "discourse create extension pg_trgm"
   when: discourse_pg_trgm is not defined or discourse_pg_trgm.stdout != "t"
   command: >
-    /usr/bin/psql discourse -c
+    /usr/bin/psql --no-password discourse -c
     "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
-  sudo_user: "postgres"
+  become_user: "postgres"
 

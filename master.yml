@@ -1,10 +1,15 @@
 ---
 
+- name: install sudo package
+  hosts: all
+  tasks:
+    - apt: name=sudo
+
+
 - name: "install unbound as a local DNSSEC-validating resolver"
   hosts: "all"
-  sudo: True
+  become: yes
   gather_facts: True
-
   roles:
     - role: "unbound"
       tags: ["unbound"]
@@ -12,7 +17,7 @@
 
 - name: "install postgres for use with discourse"
   hosts: "postgres"
-  sudo: True
+  become: yes
   gather_facts: True
 
   roles:
@@ -22,7 +27,7 @@
 
 - name: "install and configure redis"
   hosts: "redis"
-  sudo: True
+  become: yes
   gather_facts: True
 
   roles:
@@ -32,8 +37,8 @@
 
 - name: "install discourse, unicorn and nginx"
   hosts: "discourse"
-  sudo: True
   gather_facts: True
+  become: yes
 
   roles:
     - role: "discourse"

@@ -1,10 +1,6 @@
 ---
 
 dependencies:
-  - role: "epel"
-    tags: ["epel"]
-    when: ansible_distribution == "CentOS" or ansible_distribution == "Red Hat Enterprise Linux"
-
   - role: "rbenv"
     tags: ["rbenv"]
     rbenv_user: "discourse"

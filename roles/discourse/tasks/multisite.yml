@@ -29,7 +29,7 @@
   always_run: True
   ignore_errors: True
   changed_when: False
-  sudo_user: "discourse"
+  become_user: "discourse"
   with_items: discourse_multisite
   register: multisite_schema_migrations_exists
 
@@ -45,7 +45,7 @@
   always_run: True
   ignore_errors: True
   changed_when: False
-  sudo_user: "discourse"
+  become_user: "discourse"
   with_together:
     - multisite_schema_migrations_exists.results
     - discourse_multisite
@@ -57,7 +57,7 @@
     chdir: "/var/www/discourse"
   environment:
     RACK_ENV: "production"
-  sudo_user: "discourse"
+  become_user: "discourse"
   register: rake_multisite_migrate
   changed_when: False
 
@@ -79,7 +79,7 @@
     "COPY (
     SELECT COUNT(*) FROM schema_migrations
     ) TO STDOUT;"
-  sudo_user: "discourse"
+  become_user: "discourse"
   with_items: discourse_multisite
   register: multisite_executed_migrations_after
   changed_when: >

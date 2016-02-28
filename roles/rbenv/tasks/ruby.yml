@@ -12,7 +12,7 @@
     dest: "{{ rbenv_home }}/.rbenv"
     version: "{{ rbenv_version }}"
     force: True
-  sudo_user: "{{ rbenv_user }}"
+  become_user: "{{ rbenv_user }}"
 
 - name: "https://github.com/sstephenson/ruby-build"
   git:
@@ -20,7 +20,7 @@
     dest: "{{ rbenv_home }}/.rbenv/plugins/ruby-build"
     version: "{{ rbenv_ruby_build_version }}"
     force: True
-  sudo_user: "{{ rbenv_user }}"
+  become_user: "{{ rbenv_user }}"
 
 - name: "install ruby with rbenv"
   command: >
@@ -30,14 +30,15 @@
     creates: "{{ rbenv_home }}/.rbenv/versions/{{ rbenv_ruby_version }}"
   environment:
     MAKE_OPT: "{{ rbenv_make_opt }}"
-  sudo_user: "{{ rbenv_user }}"
+    RBENV_ROOT: "{{ rbenv_home }}/.rbenv/"
+  become_user: "{{ rbenv_user }}"
   notify:
     - "reload services"
     - "restart services"
 
 - name: "rbenv rehash"
   command: "{{ rbenv_home }}/.rbenv/bin/rbenv rehash"
-  sudo_user: "{{ rbenv_user }}"
+  become_user: "{{ rbenv_user }}"
   changed_when: False
 
 - name: "set global ruby version"

@@ -14,7 +14,7 @@
     chdir: "/var/www/discourse"
   always_run: True
   ignore_errors: True
-  sudo_user: "discourse"
+  become_user: "discourse"
   register: bundle_show_pg
   changed_when: bundle_show_pg.rc == 0
 
@@ -27,7 +27,7 @@
     gem uninstall --executables --ignore-dependencies pg
   args:
     chdir: "/var/www/discourse"
-  sudo_user: "discourse"
+  become_user: "discourse"
   register: gem_uninstall_pg
   failed_when: "'Successfully uninstalled' not in gem_uninstall_pg.stdout"
 

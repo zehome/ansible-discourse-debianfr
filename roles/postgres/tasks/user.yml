@@ -4,20 +4,13 @@
   command: "/usr/bin/touch {{ postgres_homedir }}/.pgsql_profile"
   args:
     creates: "{{ postgres_homedir }}/.pgsql_profile"
-  sudo_user: "postgres"
+  become_user: "postgres"
 
 - name: "export PATH"
   lineinfile:
     dest: "{{ postgres_homedir }}/.pgsql_profile"
     line: "export PATH"
     insertafter: "EOF"
-
-- name: "set path to postgres binaries"
-  when: ansible_os_family == "RedHat"
-  lineinfile:
-    dest: "{{ postgres_homedir }}/.pgsql_profile"
-    line: "PATH=/usr/pgsql-{{ postgres_version }}/bin:$PATH"
-    insertbefore: "^export PATH$"
 
 - name: "set path to postgres binaries"
   when: ansible_os_family == "Debian"

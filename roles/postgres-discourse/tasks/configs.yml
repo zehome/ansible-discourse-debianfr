@@ -1,18 +1,32 @@
 ---
 
-- name: "install pg_hba.conf"
+- name: install pg_hba.conf
   template:
-    src: "pg_hba.conf.j2"
+    src: pg_hba.conf.j2
     dest: "{{ postgres_configs }}/pg_hba.conf"
-    owner: "postgres"
-    group: "postgres"
-    mode: "0600"
+    owner: postgres
+    group: postgres
+    mode: 0600
 
-- name: "install postgresql.conf"
-  template:
-    src: "postgresql.conf.j2"
+- name: create conf.d
+  file:
+    dest: "{{ postgres_configs }}/conf.d"
+    state: directory
+    mode: 0755
+    owner: postgres
+    group: postgres
+
+- name: ensure postgresql.conf includes conf.d
+  lineinfile:
     dest: "{{ postgres_configs }}/postgresql.conf"
-    owner: "postgres"
-    group: "postgres"
-    mode: "0600"
+    regexp: "^include_dir = 'conf.d'"
+    line: "include_dir = 'conf.d'"
+
+- name: install discourse.conf
+  template:
+    src: postgresql.conf.j2
+    dest: "{{ postgres_configs }}/conf.d/discourse.conf"
+    owner: postgres
+    group: postgres
+    mode: 0644
 

@@ -55,9 +55,7 @@ nginx_ssl_session_timeout:    "10m"
 nginx_ssl_session_cache:      "10m"
 nginx_ssl_buffer_size:        "16k"
 
-spdy_enabled:                 True
-nginx_spdy_keepalive_timeout: "3m"
-nginx_spdy_headers_comp:      "6"
+http2_enabled:                 True
 
 # Concatenate the CA root and intermediate certificates to create the bundle.
 # OCSP will not work without this.

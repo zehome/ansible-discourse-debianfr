@@ -37,14 +37,13 @@
 
 - name: "rake assets:precompile"
   command: >
-    /usr/bin/ionice -c 3 /usr/bin/nice -n 19
     /home/discourse/.rbenv/shims/bundle exec rake assets:precompile
   args:
     chdir: "/var/www/discourse"
   environment:
     RACK_ENV: "production"
     PATH: "/home/discourse/node_modules/.bin:{{ ansible_env.PATH }}"
-  sudo_user: "discourse"
+  become_user: "discourse"
   register: rake_assets_precompile
   changed_when: >
     precompilation_log is not defined

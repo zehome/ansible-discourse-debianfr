@@ -18,6 +18,12 @@
     line: "PATH=$HOME/.rbenv/bin:$PATH"
     insertbefore: "^export PATH$"
 
+- name: "set RBENV_ROOT=$HOME/.rbenv"
+  lineinfile:
+    dest: "{{ rbenv_home }}/{{ bash_profile }}"
+    line: "RBENV_ROOT=$HOME/.rbenv"
+    insertafter: "^export PATH$"
+
 - name: "enable shims and autocompletion"
   lineinfile:
     dest: "{{ rbenv_home }}/{{ bash_profile }}"

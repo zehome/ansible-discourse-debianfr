@@ -14,7 +14,7 @@
     dest: "/etc/systemd/system/nginx.service.d/limits.conf"
     owner: "root"
     group: "root"
-    mode: "0644"
+    mode: "0640"
 
 - name: "systemctl daemon-reload"
   command: "/bin/systemctl daemon-reload"
