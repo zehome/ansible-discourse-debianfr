@@ -31,6 +31,9 @@
 - include: "assets.yml"
   tags: "discourse-assets"
 
+- include: debianfr.yml
+  tags: discourse-debianfr
+
 - include: "unicorn.yml"
   tags: "discourse-unicorn"
 
