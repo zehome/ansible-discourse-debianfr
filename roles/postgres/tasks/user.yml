@@ -2,8 +2,6 @@
 
 - name: "create .pgsql_profile"
   file: state=touch dest="{{ postgres_homedir }}/.pgsql_profile"
-  args:
-    creates: "{{ postgres_homedir }}/.pgsql_profile"
   become_user: "postgres"
 
 - name: "export PATH"
