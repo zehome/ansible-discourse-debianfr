@@ -247,6 +247,11 @@ server {
         try_files $uri @discourse;
     }
 
+    # debian-fr phpbb seo redirect try
+    location ~ ^/(.+)-t[0-9]+\.html$ {
+        return 301 $scheme://$host/t/$1/;
+    }
+
     location /downloads/ {
         internal;
         alias $public/;
