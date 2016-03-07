@@ -1,31 +1,29 @@
 ---
 
-# COPY THIS FILE TO "group_vars/all/main.yml".
-
-discourse_hostname:           "discourse.example.com"
-discourse_developer_emails:   ["hello@example.com"]
+discourse_hostname:           "www.debian-fr.org"
+discourse_developer_emails:   ["xx@xx.xx"]
 
 # See <docs/README.migrate-postgres.rst> for help on upgrading.
-postgres_version:             "9.4"
+postgres_version:             "9.5"
 
 # Generate a long, random password here.
-postgres_password:            "12345678"
+postgres_password:            ""
 
 # If you have a dedicated postgres server, 25% of total RAM is a good starting
 # point. If running postgres on the same server as everything else, try 12.5%.
-#postgres_shared_buffers:      "128MB"
+postgres_shared_buffers:      "128MB"
 
 # If you only have 1GB RAM, use 2 workers. Otherwise increase to 3 or 4.
-#discourse_unicorn_workers:    "2"
+discourse_unicorn_workers:    "2"
 
 # If left as the default 'localhost', postfix and opendkim will be installed.
 # Read <docs/README.mail.rst> for instructions.
-#discourse_smtp_address:       "localhost"
-#discourse_smtp_port:          "25"
+discourse_smtp_address:       ""
+discourse_smtp_port:          "25"
 #discourse_smtp_username:      ""
 #discourse_smtp_password:      ""
 #discourse_smtp_auth:          "plain"
-#discourse_smtp_start_tls:     "true"
+discourse_smtp_start_tls:     "false"
 
 #-----------------------#
 # Further configuration #
@@ -35,5 +33,20 @@ postgres_password:            "12345678"
 # "defaults/main.yml" file which contains the default variables. You can
 # override any of the default variables by defining them below.
 
+nginx_client_max_body_size: "20m"
+postgres_text_search_config:  "pg_catalog.french"
+rbenv_ruby_version: "2.3.0"
+discourse_version: "v1.5.0.beta12"
+discourse_plugins:
+  - name: "discourse-solved"
+    repo: "https://github.com/discourse/discourse-solved.git"
+    version: "HEAD"
 
+  - name: "discourse-spoiler-alert"
+    repo: "https://github.com/discourse/discourse-spoiler-alert.git"
+    version: "HEAD"
+
+  - name: "discourse-tagging"
+    repo: "https://github.com/discourse/discourse-tagging.git"
+    version: "HEAD"
 

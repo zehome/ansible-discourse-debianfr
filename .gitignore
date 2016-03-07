@@ -11,3 +11,7 @@
 
 # ansible temp files
 *.retry
+
+# Ignore production configuration
+group_vars/all/main.yml
+inventory/*
