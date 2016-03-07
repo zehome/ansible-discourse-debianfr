@@ -7,7 +7,8 @@ This repository only serves debian-fr.org. Don't use it!
 ## Quick upgrade
 
 ```shell
+# edit group_vars/all/main.yml
 . ./.local/bin/activate
-ansible-playbook -i inventory/debianfr master.yml
+ansible-playbook -i inventory/debianfr master.yml -t discourse
 ```
 
