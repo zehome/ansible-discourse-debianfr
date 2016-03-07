@@ -5,6 +5,10 @@
   tasks:
     - apt: name=sudo
 
+- name: upgrade system
+  hosts: all
+  tasks:
+    - apt: update_cache=yes upgrade=dist
 
 - name: "install unbound as a local DNSSEC-validating resolver"
   hosts: "all"
