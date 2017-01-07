@@ -26,7 +26,7 @@
     "COPY ( SELECT EXISTS (
     SELECT 1 FROM pg_tables WHERE tablename='schema_migrations'
     ) ) TO STDOUT;"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   become_user: "discourse"
@@ -42,7 +42,7 @@
     "COPY (
     SELECT COUNT(*) FROM schema_migrations
     ) TO STDOUT;"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   become_user: "discourse"

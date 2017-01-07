@@ -3,7 +3,7 @@
 - name: "check if asset precompilation log file exists"
   stat:
     path: "/var/www/discourse/log/ansible.last_precompilation"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   register: precompilation_log

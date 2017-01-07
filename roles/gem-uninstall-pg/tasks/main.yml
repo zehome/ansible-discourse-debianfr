@@ -12,7 +12,7 @@
   command: "/home/discourse/.rbenv/shims/bundle show pg"
   args:
     chdir: "/var/www/discourse"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   become_user: "discourse"
   register: bundle_show_pg

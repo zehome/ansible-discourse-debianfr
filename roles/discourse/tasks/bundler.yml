@@ -3,7 +3,7 @@
 - name: "check if bundler is installed"
   command: "/home/discourse/.rbenv/shims/gem list --installed bundler --quiet"
   become_user: "discourse"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   register: gem_list_bundler
@@ -39,7 +39,7 @@
   args:
     chdir: "/var/www/discourse"
   become_user: "discourse"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   register: bundle_install_pre
@@ -72,7 +72,7 @@
   args:
     chdir: "/var/www/discourse"
   become_user: "discourse"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   register: bundle_install_post
   changed_when: >

@@ -26,7 +26,7 @@
     FROM information_schema.schemata
     WHERE schema_name='public'
     ) TO STDOUT;"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   become_user: "postgres"
@@ -49,7 +49,7 @@
     "COPY (
     SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='hstore' )
     ) TO STDOUT;"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   become_user: "postgres"
@@ -72,7 +72,7 @@
     "COPY (
     SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='pg_trgm' )
     ) TO STDOUT;"
-  always_run: True
+  check_mode: no
   ignore_errors: True
   changed_when: False
   become_user: "postgres"
