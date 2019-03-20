@@ -38,6 +38,10 @@
     - role: "redis"
       tags: ["redis"]
 
+- name: "install npm"
+  hosts: "discourse"
+  roles:
+    - role: "geerlingguy.nodejs"
 
 - name: "install discourse, unicorn and nginx"
   hosts: "discourse"

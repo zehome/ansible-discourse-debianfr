@@ -33,6 +33,7 @@
     db: "discourse"
     priv: "ALL"
     password: "{{ postgres_password }}"
+    encrypted: yes
   become_user: "postgres"
 
 - name: "check if discourse user owns public schema"

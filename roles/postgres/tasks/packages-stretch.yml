@@ -3,7 +3,7 @@
 - name: "install packages"
   apt:
     name: "{{ item }}"
-    default_release: "jessie-pgdg"
+    default_release: "stretch-pgdg"
     state: "present"
   with_items:
     - "postgresql-{{ postgres_version }}"
@@ -16,11 +16,10 @@
 - name: "install packages"
   apt:
     name: "{{ item }}"
-    default_release: "jessie-pgdg"
+    default_release: "stretch-pgdg"
     state: "present"
   with_items:
     - "postgresql-client-{{ postgres_version }}"
-    - "postgresql-contrib-{{ postgres_version }}"
     - "postgresql-server-dev-{{ postgres_version }}"
     - "python-psycopg2"
 

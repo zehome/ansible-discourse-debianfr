@@ -6,17 +6,17 @@
 - name: "assert that rbenv_user is defined"
   assert: { that: "rbenv_user is defined" }
 
-- name: "https://github.com/sstephenson/rbenv"
+- name: "https://github.com/rbenv/rbenv"
   git:
-    repo: "https://github.com/sstephenson/rbenv.git"
+    repo: "https://github.com/rbenv/rbenv.git"
     dest: "{{ rbenv_home }}/.rbenv"
     version: "{{ rbenv_version }}"
     force: True
   become_user: "{{ rbenv_user }}"
 
-- name: "https://github.com/sstephenson/ruby-build"
+- name: "https://github.com/rbenv/ruby-build"
   git:
-    repo: "https://github.com/sstephenson/ruby-build.git"
+    repo: "https://github.com/rbenv/ruby-build.git"
     dest: "{{ rbenv_home }}/.rbenv/plugins/ruby-build"
     version: "{{ rbenv_ruby_build_version }}"
     force: True

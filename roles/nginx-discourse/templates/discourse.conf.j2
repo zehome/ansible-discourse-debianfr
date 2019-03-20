@@ -126,7 +126,7 @@ server {
         root $public;
         add_header ETag "";
 
-        location ~* assets\.*\.(eot|ttf|woff|woff2|ico)$ {
+        location ~* (assets|plugins|uploads)/.*\.(eot|ttf|woff|woff2|ico)$ {
             expires 1y;
             add_header Cache-Control public;
 {% if discourse_cdn_enabled %}
@@ -139,27 +139,39 @@ server {
             log_not_found off;
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Request-Start "t=${msec}";
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $thescheme;
             proxy_pass http://discourse;
             break;
         }
+        # some minimal caching here so we don't keep asking
+        # longer term we should increas probably to 1y
+        location ~ ^/javascripts/ {
+            expires 1d;
+            add_header Cache-Control public,immutable;
+        }
 
-        location ~ ^/assets/ {
+        location ~ ^/assets/(?<asset_path>.+)$ {
             expires 1y;
+            # asset pipeline enables this
+            # brotli_static on;
             gzip_static on;
-            add_header Cache-Control public;
+            add_header Cache-Control public,immutable;
+            # HOOK in asset location (used for extensibility)
+            # TODO I don't think this break is needed, it just breaks out of rewrite
             break;
         }
 
         location ~ ^/plugins/ {
             expires 1y;
-            add_header Cache-Control public;
+            add_header Cache-Control public,immutable;
         }
 
-        location ~ /_?emoji.*\.(png|gif|jpg|jpeg)$/ {
+        # cache emojis
+        location ~ /images/emoji/ {
             expires 1y;
-            add_header Cache-Control public;
+            add_header Cache-Control public,immutable;
         }
 
         location ~ ^/uploads/ {
@@ -170,7 +182,7 @@ server {
             proxy_set_header X-Sendfile-Type X-Accel-Redirect;
             proxy_set_header X-Accel-Mapping $public/=/downloads/;
             expires 1y;
-            add_header Cache-Control public;
+            add_header Cache-Control public,immutable;
 
 {% if nginx_check_referer %}
             valid_referers {{ nginx_valid_referers }};
@@ -185,7 +197,7 @@ server {
             }
 
             # This allows us to bypass rails.
-            location ~* \.(gif|png|jpg|jpeg|bmp|tif|tiff)$ {
+            location ~* \.(gif|png|jpg|jpeg|bmp|tif|tiff|svg|ico|webp)$ {
                 try_files $uri =404;
             }
 
@@ -209,38 +221,46 @@ server {
             break;
         }
 
-        location ~ ^/(letter_avatar/|user_avatar|highlight-js|stylesheets|favicon/proxied) {
+        location ~ ^/(svg-sprite/|letter_avatar/|letter_avatar_proxy/|user_avatar|highlight-js|stylesheets|theme-javascripts|favicon/proxied|service-worker) {
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Request-Start "t=${msec}";
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $thescheme;
 
+            # if Set-Cookie is in the response nothing gets cached
+            # this is double bad cause we are not passing last modified in
             proxy_ignore_headers "Set-Cookie";
             proxy_hide_header "Set-Cookie";
+            proxy_hide_header "X-Discourse-Username";
+            proxy_hide_header "X-Runtime";
 
             proxy_cache one;
+            proxy_cache_key "$scheme,$host,$request_uri";
             proxy_cache_valid 200 301 302 7d;
             proxy_cache_valid any 1m;
             proxy_pass http://discourse;
             break;
         }
 
-        location /letter_avatar_proxy/ {
-          # Don't sent client headers to avatars.discourse.org.
-          proxy_method GET;
-          proxy_pass_request_headers off;
-          proxy_pass_request_body off;
+        # we need buffering off for message bus
+        location /message-bus/ {
+            proxy_set_header X-Request-Start "t=${msec}";
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $thescheme;
+            proxy_http_version 1.1;
+            proxy_buffering off;
+            proxy_pass http://discourse;
+            break;
+        }
 
-          # Ignore cookies.
-          proxy_ignore_headers "Set-Cookie";
-          proxy_hide_header "Set-Cookie";
-
-          proxy_cache one;
-          proxy_cache_key $uri;
-          proxy_cache_valid 200 7d;
-          proxy_cache_valid 404 1m;
-
-          proxy_pass https://avatars.discourse.org/;
+        # debian-fr fonts
+        location /fonts/ {
+            alias /var/www/fonts/;
+            try_files $uri =404;
+            autoindex off;
         }
 
         # This means every file in public is tried first.
@@ -263,6 +283,7 @@ server {
         limit_req zone=bot burst={{ nginx_bursts_per_minute }} nodelay;
 {% endif %}
         proxy_set_header Host $http_host;
+        proxy_set_header X-Request-Start "t=${msec}";
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $thescheme;

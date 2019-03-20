@@ -3,7 +3,7 @@
 - name: "install packages"
   apt:
     name: "{{ item }}"
-    default_release: jessie-backports
+    default_release: stretch-backports
     update_cache: True
     state: present
   with_items:

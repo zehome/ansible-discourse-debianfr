@@ -1,9 +1,0 @@
----
-
-- name: "install opendkim"
-  yum:
-    name: "opendkim"
-    state: "present"
-  notify:
-    - "restart opendkim"
-

@@ -16,3 +16,17 @@
     - favicon.ico
     - debianfr.org.small.png
     - debianfr.org.petit.png
+
+- name: create /var/www/fonts
+  file:
+    dest: /var/www/fonts
+    owner: discourse
+    group: discourse
+    mode: 0755
+    state: directory
+
+- name: install debianfr fonts
+  copy:
+    src: "files/fonts/"
+    dest: "/var/www/fonts/"
+

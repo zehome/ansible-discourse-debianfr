@@ -2,7 +2,7 @@
 
 # Some of these may not strictly be necessary.
 - name: "install packages for Discourse"
-  yum:
+  apt:
     name: "{{ item }}"
     state: "present"
   with_items:
@@ -13,43 +13,40 @@
     - "bison"
     - "byacc"
     - "gcc"
-    - "gcc-c++"
+    - "g++"
     - "gettext"
-    - "glibc-devel"
     - "libtool"
     - "make"
+    - "libc6-dev"
     - "patch"
-    - "pkgconfig"
+    - "pkg-config"
     # Ruby:
-    - "gdbm-devel"
-    - "libffi-devel"
-    - "libyaml-devel"
-    - "ncurses-devel"
-    - "openssl-devel"
-    - "readline-devel"
-    - "zlib-devel"
+    - "libffi-dev"
+    - "libgdbm3"
+    - "libgdbm-dev"
+    - "libncurses5-dev"
+    - "libreadline6-dev"
+    - "libssl-dev"
+    - "libyaml-dev"
+    - "zlib1g-dev"
     # Unicorn:
-    - "jemalloc"
+    - "libjemalloc1"
     # image_optim:
     - "advancecomp"
     - "gifsicle"
     - "jhead"
     - "jpegoptim"
-    - "libjpeg"
-    - "libjpeg-turbo-utils"
+    - "libjpeg-turbo-progs"
     - "optipng"
     - "pngcrush"
     - "pngquant"
-    # Node.js
-    - "npm"
     # PostgreSQL:
-    - "postgresql{{ postgres_version_short }}"
-    - "postgresql{{ postgres_version_short }}-devel"
+    - "postgresql-client-{{ postgres_version }}"
+    - "postgresql-server-dev-{{ postgres_version }}"
     # Other:
-    - "ImageMagick"
     - "git"
     - "gzip"
-    - "libcurl-devel"
+    - "imagemagick"
+    - "libcurl3"
     - "policycoreutils"
-    - "policycoreutils-python"
 

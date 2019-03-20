@@ -6,11 +6,11 @@
 - include: "user.yml"
   tags: "rbenv-user"
 
-- include: "packages-jessie.yml"
+- include: "packages-stretch.yml"
   tags: "rbenv-packages"
   when: >
     ansible_os_family == "Debian"
-    and ansible_distribution_major_version == "8"
+    and ansible_distribution_major_version >= "9"
 
 - include: "ruby.yml"
   tags: "rbenv-ruby"

@@ -1,0 +1,14 @@
+---
+
+- name: "enable stretch-backports repository"
+  apt_repository:
+    repo: "deb http://http.debian.net/debian stretch-backports main"
+    state: "present"
+
+- name: "install redis"
+  apt:
+    name: "redis-server"
+    default_release: "stretch-backports"
+    update_cache: True
+    state: "present"
+
