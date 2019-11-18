@@ -12,6 +12,7 @@
     - "binutils"
     - "bison"
     - "byacc"
+    - "brotli"
     - "gcc"
     - "g++"
     - "gettext"
@@ -30,7 +31,7 @@
     - "libyaml-dev"
     - "zlib1g-dev"
     # Unicorn:
-    - "libjemalloc1"
+    - "libjemalloc2"
     # image_optim:
     - "advancecomp"
     - "gifsicle"

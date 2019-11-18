@@ -3,9 +3,9 @@
 - name: "determine path to libjemalloc shared object"
   when: ansible_os_family == "Debian"
   shell: >
-    /usr/bin/dpkg --listfiles libjemalloc1 |
+    /usr/bin/dpkg --listfiles libjemalloc2 |
     /bin/grep --extended-regexp --only-matching --line-regexp --max-count=1
-    '^/[_/[:alnum:]-]+/libjemalloc\.so\.1$'
+    '^/[_/[:alnum:]-]+/libjemalloc\.so\.2$'
   register: libjemalloc_debian
   check_mode: no
   changed_when: False
