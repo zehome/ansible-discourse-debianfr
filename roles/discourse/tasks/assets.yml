@@ -44,6 +44,7 @@
     RACK_ENV: "production"
     PATH: "/home/discourse/node_modules/.bin:{{ ansible_env.PATH }}"
   become_user: "discourse"
+  become: yes
   register: rake_assets_precompile
   changed_when: >
     precompilation_log is not defined

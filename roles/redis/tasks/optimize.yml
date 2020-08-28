@@ -36,7 +36,7 @@
 
 - name: "systemctl daemon-reload"
   when: disable_transparent_huge_pages
-  command: "/bin/systemctl daemon-reload"
+  systemd: daemon_reload=yes
   changed_when: False
 
 - name: "enable and start disable-transparent-huge-pages"

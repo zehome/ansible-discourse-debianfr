@@ -6,11 +6,8 @@
 - include: "user.yml"
   tags: "discourse-user"
 
-- include: "packages-stretch.yml"
+- include: "packages.yml"
   tags: "discourse-packages"
-  when: >
-    ansible_os_family == "Debian"
-    and ansible_distribution_major_version >= "9"
 
 - include: "app.yml"
   tags: "discourse-app"

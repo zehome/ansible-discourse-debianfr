@@ -9,12 +9,12 @@
     mode: "0600"
 
 - name: "set psql_host"
-  when: discourse_db_host == ""
+  when: bool(discourse_db_host)
   set_fact:
     psql_host: ""
 
 - name: "set psql_host"
-  when: discourse_db_host != ""
+  when: not bool(discourse_db_host)
   set_fact:
     psql_host: "-h {{ discourse_db_host }}"
 
@@ -28,6 +28,7 @@
   ignore_errors: True
   changed_when: False
   become_user: "discourse"
+  become: yes
   register: schema_migrations_exists
 
 - name: "check total number of executed migrations before"
@@ -43,6 +44,7 @@
   ignore_errors: True
   changed_when: False
   become_user: "discourse"
+  become: yes
   register: executed_migrations_before
 
 - name: "rake db:migrate"
@@ -52,6 +54,7 @@
   environment:
     RACK_ENV: "production"
   become_user: "discourse"
+  become: yes
   register: rake_db_migrate
   changed_when: False
 
@@ -74,10 +77,11 @@
     SELECT COUNT(*) FROM schema_migrations
     ) TO STDOUT;"
   become_user: "discourse"
+  become: yes
   register: executed_migrations_after
   check_mode: no
   ignore_errors: True
-  changed_when: > 
+  changed_when: >
     schema_migrations_exists is not defined
     or ( executed_migrations_before is not defined )
     or ( executed_migrations_after is not defined )

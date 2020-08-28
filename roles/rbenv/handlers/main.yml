@@ -5,12 +5,12 @@
   service:
     name: "{{ item }}"
     state: "reloaded"
-  with_items: rbenv_reload
+  loop: rbenv_reload
 
 - name: "restart services"
   when: rbenv_restart is defined
   service:
     name: "{{ item }}"
     state: "restarted"
-  with_items: rbenv_restart
+  loop: rbenv_restart
 

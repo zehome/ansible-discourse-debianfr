@@ -1,0 +1,11 @@
+---
+
+- name: install opendkim
+  apt:
+    state: present
+    name:
+      - "opendkim"
+      - "opendkim-tools"
+  notify:
+    - "restart opendkim"
+

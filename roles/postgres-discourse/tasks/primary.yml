@@ -1,7 +1,7 @@
 ---
 
 - name: "check if postgres_password is empty"
-  assert: { that: "postgres_password != ''" }
+  assert: { that: "postgres_password | length > 0" }
 
 - name: "enable postgres"
   service:
@@ -19,118 +19,110 @@
   pause:
     seconds: "10"
 
-- name: "create discourse database"
-  postgresql_db:
-    name: "discourse"
-    encoding: "{{ postgres_encoding }}"
-    lc_collate: "{{ postgres_locale }}"
-    lc_ctype: "{{ postgres_locale }}"
-  become_user: "postgres"
+- name: Configure postgres
+  become: yes
+  become_user: postgres
+  block:
+    - name: "create discourse database"
+      postgresql_db:
+        name: "discourse"
+        encoding: "{{ postgres_encoding }}"
+        lc_collate: "{{ postgres_locale }}"
+        lc_ctype: "{{ postgres_locale }}"
 
-- name: "create discourse database user"
-  postgresql_user:
-    name: "discourse"
-    db: "discourse"
-    priv: "ALL"
-    password: "{{ postgres_password }}"
-    encrypted: yes
-  become_user: "postgres"
+    - name: "create discourse database user"
+      postgresql_user:
+        name: "discourse"
+        db: "discourse"
+        priv: "ALL"
+        password: "{{ postgres_password }}"
+        encrypted: yes
 
-- name: "check if discourse user owns public schema"
-  command: >
-    /usr/bin/psql --no-password discourse -c
-    "COPY (
-    SELECT schema_owner
-    FROM information_schema.schemata
-    WHERE schema_name='public'
-    ) TO STDOUT;"
-  check_mode: no
-  ignore_errors: True
-  changed_when: False
-  become_user: "postgres"
-  register: public_schema_owner
+    - name: "check if discourse user owns public schema"
+      command: >
+        /usr/bin/psql --no-password discourse -c
+        "COPY (
+        SELECT schema_owner
+        FROM information_schema.schemata
+        WHERE schema_name='public'
+        ) TO STDOUT;"
+      check_mode: no
+      ignore_errors: True
+      changed_when: False
+      register: public_schema_owner
 
-- name: "ALTER SCHEMA public OWNER TO discourse"
-  when: >
-    public_schema_owner is not defined
-    or public_schema_owner.stdout != "discourse"
-  command: >
-    /usr/bin/psql --no-password discourse -c
-    "ALTER SCHEMA public OWNER TO discourse;"
-  become_user: "postgres"
+    - name: "ALTER SCHEMA public OWNER TO discourse"
+      when: >
+        public_schema_owner is not defined
+        or public_schema_owner.stdout != "discourse"
+      command: >
+        /usr/bin/psql --no-password discourse -c
+        "ALTER SCHEMA public OWNER TO discourse;"
 
-- name: "check if template1 has extension hstore"
-  command: >
-    /usr/bin/psql --no-password template1 -c
-    "COPY (
-    SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='hstore' )
-    ) TO STDOUT;"
-  check_mode: no
-  ignore_errors: True
-  changed_when: False
-  become_user: "postgres"
-  register: template1_hstore
+    - name: "check if template1 has extension hstore"
+      command: >
+        /usr/bin/psql --no-password template1 -c
+        "COPY (
+        SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='hstore' )
+        ) TO STDOUT;"
+      check_mode: no
+      ignore_errors: True
+      changed_when: False
+      register: template1_hstore
 
-- name: "template1 create extension hstore"
-  when: template1_hstore is not defined or template1_hstore.stdout != "t"
-  command: >
-    /usr/bin/psql --no-password template1 -c
-    "CREATE EXTENSION IF NOT EXISTS hstore;"
-  become_user: "postgres"
+    - name: "template1 create extension hstore"
+      when: template1_hstore is not defined or template1_hstore.stdout != "t"
+      command: >
+        /usr/bin/psql --no-password template1 -c
+        "CREATE EXTENSION IF NOT EXISTS hstore;"
 
-- name: "check if template1 has extension pg_trgm"
-  command: >
-    /usr/bin/psql --no-password template1 -c
-    "COPY (
-    SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='pg_trgm' )
-    ) TO STDOUT;"
-  check_mode: no
-  ignore_errors: True
-  changed_when: False
-  become_user: "postgres"
-  register: template1_pg_trgm
+    - name: "check if template1 has extension pg_trgm"
+      command: >
+        /usr/bin/psql --no-password template1 -c
+        "COPY (
+        SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='pg_trgm' )
+        ) TO STDOUT;"
+      check_mode: no
+      ignore_errors: True
+      changed_when: False
+      register: template1_pg_trgm
 
-- name: "template1 create extension pg_trgm"
-  when: template1_pg_trgm is not defined or template1_pg_trgm.stdout != "t"
-  command: >
-    /usr/bin/psql --no-password template1 -c
-    "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
-  become_user: "postgres"
+    - name: "template1 create extension pg_trgm"
+      when: template1_pg_trgm is not defined or template1_pg_trgm.stdout != "t"
+      command: >
+        /usr/bin/psql --no-password template1 -c
+        "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
-- name: "check if discourse has extension hstore"
-  command: >
-    /usr/bin/psql --no-password discourse -c
-    "COPY (
-    SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='hstore' )
-    ) TO STDOUT;"
-  check_mode: no
-  changed_when: False
-  become_user: "postgres"
-  register: discourse_hstore
+    - name: "check if discourse has extension hstore"
+      command: >
+        /usr/bin/psql --no-password discourse -c
+        "COPY (
+        SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='hstore' )
+        ) TO STDOUT;"
+      check_mode: no
+      changed_when: False
+      register: discourse_hstore
 
-- name: "discourse create extension hstore"
-  when: discourse_hstore is not defined or discourse_hstore.stdout != "t"
-  command: >
-    /usr/bin/psql --no-password discourse -c
-    "CREATE EXTENSION IF NOT EXISTS hstore;"
-  become_user: "postgres"
+    - name: "discourse create extension hstore"
+      when: discourse_hstore is not defined or discourse_hstore.stdout != "t"
+      command: >
+        /usr/bin/psql --no-password discourse -c
+        "CREATE EXTENSION IF NOT EXISTS hstore;"
 
-- name: "check if discourse has extension pg_trgm"
-  command: >
-    /usr/bin/psql --no-password discourse -c
-    "COPY (
-    SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='pg_trgm' )
-    ) TO STDOUT;"
-  check_mode: no
-  ignore_errors: True
-  changed_when: False
-  become_user: "postgres"
-  register: discourse_pg_trgm
+    - name: "check if discourse has extension pg_trgm"
+      command: >
+        /usr/bin/psql --no-password discourse -c
+        "COPY (
+        SELECT EXISTS ( SELECT 1 FROM pg_extension WHERE extname='pg_trgm' )
+        ) TO STDOUT;"
+      check_mode: no
+      ignore_errors: True
+      changed_when: False
+      register: discourse_pg_trgm
 
-- name: "discourse create extension pg_trgm"
-  when: discourse_pg_trgm is not defined or discourse_pg_trgm.stdout != "t"
-  command: >
-    /usr/bin/psql --no-password discourse -c
-    "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
-  become_user: "postgres"
+    - name: "discourse create extension pg_trgm"
+      when: discourse_pg_trgm is not defined or discourse_pg_trgm.stdout != "t"
+      command: >
+        /usr/bin/psql --no-password discourse -c
+        "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 

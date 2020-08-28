@@ -12,7 +12,10 @@
   copy:
     src: "files/{{ item }}"
     dest: "/var/www/discourse/public/logos/{{ item }}"
-  with_items:
+    mode: 0644
+    owner: discourse
+    group: discourse
+  loop:
     - favicon.ico
     - debianfr.org.small.png
     - debianfr.org.petit.png
@@ -27,6 +30,6 @@
 
 - name: install debianfr fonts
   copy:
-    src: "files/fonts/"
-    dest: "/var/www/fonts/"
+    src: files/fonts/
+    dest: /var/www/fonts/
 

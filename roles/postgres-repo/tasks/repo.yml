@@ -8,8 +8,8 @@
   with_items:
     - "0xB97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8"
 
-- name: "enable PostgreSQL repository for Debian Stretch"
+- name: "enable PostgreSQL repository for Debian buster"
   apt_repository:
-    repo: "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main"
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main"
     state: "present"
 

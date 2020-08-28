@@ -1,0 +1,22 @@
+---
+
+- name: "install packages"
+  apt:
+    name: "postgresql-{{ postgres_version }}"
+    default_release: "buster-pgdg"
+    state: "present"
+  register: install_postgresql
+
+- name: "drop default cluster"
+  when: install_postgresql.changed
+  command: "/usr/bin/pg_dropcluster --stop {{ postgres_version }} main"
+
+- name: "install packages"
+  apt:
+    default_release: buster-pgdg
+    state: present
+    name:
+      - "postgresql-client-{{ postgres_version }}"
+      - "postgresql-server-dev-{{ postgres_version }}"
+      - python-psycopg2
+

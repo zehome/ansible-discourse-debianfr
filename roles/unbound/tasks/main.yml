@@ -1,10 +1,7 @@
 ---
 
-- include: "packages-stretch.yml"
+- include: "packages.yml"
   tags: "unbound-packages"
-  when: >
-    ansible_os_family == "Debian"
-    and ansible_distribution_major_version == "9"
 
 - include: "configs.yml"
   tags: "unbound-configs"

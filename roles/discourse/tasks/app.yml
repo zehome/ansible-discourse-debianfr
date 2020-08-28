@@ -12,14 +12,21 @@
     setype: "httpd_sys_content_t"
     selevel: "s0"
 
-- name: "https://github.com/discourse/discourse.git"
+- name: update repository https://github.com/discourse/discourse.git
+  command:
+    cmd: git fetch --tags origin --prune --prune-tags
+    chdir: /var/www/discourse
+  become_user: discourse
+  become: yes
+
+- name: "checkout discourse vers {{ discourse_version }}"
   git:
     repo: "https://github.com/discourse/discourse.git"
     dest: "/var/www/discourse"
     version: "{{ discourse_version }}"
-    update: True
     force: True
   become_user: "discourse"
+  become: yes
   notify:
     - "reload discourse-unicorn"
 
@@ -118,6 +125,7 @@
     update: True
     force: True
   become_user: "discourse"
+  become: yes
   with_items: "{{ discourse_plugins }}"
   notify:
     - "reload discourse-unicorn"

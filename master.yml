@@ -1,10 +1,5 @@
 ---
 
-- name: install sudo package
-  hosts: all
-  tasks:
-    - apt: name=sudo
-
 - name: upgrade system
   hosts: all
   tasks:

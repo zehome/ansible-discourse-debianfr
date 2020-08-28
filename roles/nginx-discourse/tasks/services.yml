@@ -17,7 +17,7 @@
     mode: "0640"
 
 - name: "systemctl daemon-reload"
-  command: "/bin/systemctl daemon-reload"
+  systemd: daemon_reload=yes
   changed_when: False
 
 - name: "enable nginx"

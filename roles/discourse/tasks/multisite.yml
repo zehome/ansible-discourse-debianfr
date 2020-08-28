@@ -11,18 +11,18 @@
     - "reload discourse-unicorn"
 
 - name: "set psql_host"
-  when: discourse_db_host == ""
+  when: bool(discourse_db_host)
   set_fact:
     psql_host: ""
 
 - name: "set psql_host"
-  when: discourse_db_host != ""
+  when: not bool(discourse_db_host)
   set_fact:
     psql_host: "-h {{ discourse_db_host }}"
 
 - name: "check if schema_migrations table exists"
   command: >
-    /usr/bin/psql {{ item.database }} {{ psql_host }} -c
+    /usr/bin/psql "{{ item.database }}" "{{ psql_host }}" -c
     "COPY ( SELECT EXISTS (
     SELECT 1 FROM pg_tables WHERE tablename='schema_migrations'
     ) ) TO STDOUT;"
@@ -30,6 +30,7 @@
   ignore_errors: True
   changed_when: False
   become_user: "discourse"
+  become: yes
   with_items: discourse_multisite
   register: multisite_schema_migrations_exists
 
@@ -38,7 +39,7 @@
     multisite_schema_migrations_exists is defined
     and ( item.0.stdout == "t" )
   command: >
-    /usr/bin/psql {{ item.1.database }} {{ psql_host }} -c
+    /usr/bin/psql "{{ item.1.database }}" "{{ psql_host }}" -c
     "COPY (
     SELECT COUNT(*) FROM schema_migrations
     ) TO STDOUT;"
@@ -46,9 +47,10 @@
   ignore_errors: True
   changed_when: False
   become_user: "discourse"
+  become: yes
   with_together:
-    - multisite_schema_migrations_exists.results
-    - discourse_multisite
+    - "{{ multisite_schema_migrations_exists.results }}"
+    - "{{ discourse_multisite }}"
   register: multisite_executed_migrations_before
 
 - name: "rake multisite:migrate"
@@ -58,6 +60,7 @@
   environment:
     RACK_ENV: "production"
   become_user: "discourse"
+  become: yes
   register: rake_multisite_migrate
   changed_when: False
 
@@ -75,12 +78,13 @@
 
 - name: "check total number of executed migrations after"
   command: >
-    /usr/bin/psql {{ item.database }} {{ psql_host }} -c
+    /usr/bin/psql "{{ item.database }}" "{{ psql_host }}" -c
     "COPY (
     SELECT COUNT(*) FROM schema_migrations
     ) TO STDOUT;"
   become_user: "discourse"
-  with_items: discourse_multisite
+  become: yes
+  with_items: "{{ discourse_multisite }}"
   register: multisite_executed_migrations_after
   changed_when: >
     multisite_schema_migrations_exists is not defined
@@ -95,10 +99,10 @@
     and ( multisite_executed_migrations_after is defined )
   command: "/bin/true"
   with_together:
-    - multisite_schema_migrations_exists.results
-    - multisite_executed_migrations_before.results
-    - multisite_executed_migrations_after.results
-  changed_when: > 
+    - "{{ multisite_schema_migrations_exists.results }}"
+    - "{{ multisite_executed_migrations_before.results }}"
+    - "{{ multisite_executed_migrations_after.results }}"
+  changed_when: >
     item.0.stdout != "t"
     or ( item.2.stdout > item.1.stdout )
   notify:
